@@ -36,7 +36,7 @@ Aplicación web full-stack para gestionar el registro de vehículos y validar la
 
 **Frontend:**
 - React 18, TypeScript, Vite
-- Material UI, React Hook Form, Axios
+- Material UI, Formik, Yup para validaciones robustas, Axios
 
 **DevOps:**
 - Docker, Docker Compose, Nginx
@@ -88,6 +88,11 @@ URLs:
 
 ## 📦 Despliegue en Producción
 
+### URLs en Render.com
+
+- **Frontend**: https://technical-assessment-1-m4g7.onrender.com
+- **Backend API**: https://technical-assessment-2qji.onrender.com/api/v1
+
 ### Opción 1: Render.com (Recomendado - Gratis)
 
 1. **Crear cuenta en Render**: https://render.com
@@ -122,7 +127,7 @@ URLs:
    - Dockerfile Path: `./Dockerfile.frontend`
    - Variable de entorno:
      ```
-     VITE_API_BASE_URL=https://[tu-backend-url].onrender.com/api/v1
+     VITE_API_BASE_URL=https://technical-assessment-2qji.onrender.com/api/v1
      ```
 
 ### Opción 2: Docker Compose
@@ -185,12 +190,110 @@ Tests incluidos:
 
 ---
 
-## 🔐 Variables de Entorno
+## 🔐 Seguridad - API Key
+
+La aplicación utiliza **autenticación con API Key** para proteger todos los endpoints de la API.
+
+### Configuración
+
+Cada solicitud debe incluir el header:
+```
+X-API-Key: [clave-api]
+```
+
+### API Keys Válidas
+
+**Desarrollo:**
+```
+X-API-Key: dev-api-key-12345
+```
+
+**Producción:**
+```
+X-API-Key: prod-api-key-secure-key
+```
+
+### Ejemplo de Solicitud
+
+```bash
+curl -X POST http://localhost:8080/api/v1/vehicles/register \
+  -H "Content-Type: application/json" \
+  -H "X-API-Key: dev-api-key-12345" \
+  -d '{
+    "plate": "ABC-1234",
+    "color": "Rojo",
+    "model": "Sedan",
+    "chassis": "1HGBH41JXMN109186",
+    "brand": "Toyota",
+    "year": 2023
+  }'
+```
+
+### Con JavaScript/Axios (Frontend)
+
+```typescript
+import axios from 'axios';
+
+const apiClient = axios.create({
+  baseURL: 'http://localhost:8080/api/v1',
+  headers: {
+    'Content-Type': 'application/json',
+    'X-API-Key': 'dev-api-key-12345'
+  },
+});
+```
+
+### Gestión de API Keys
+
+⚠️ **En Producción:**
+- Las claves deben almacenarse en **variables de entorno**
+- Usar diferentes claves para cada entorno (dev, staging, prod)
+- Rotar claves regularmente
+- Usar HTTPS obligatoriamente
+
+**Ubicación de las claves (backend):**
+- [`src/main/java/com/hoynocircula/security/ApiKeyProvider.java`](backend/src/main/java/com/hoynocircula/security/ApiKeyProvider.java)
+
+---
+
+## 📖 Variables de Entorno
+
+### Frontend
+
+```bash
+# .env (Desarrollo)
+VITE_API_BASE_URL=http://localhost:8080/api/v1
+VITE_API_KEY=dev-api-key-12345
+```
+
+```bash
+# .env.production (Producción)
+VITE_API_BASE_URL=https://technical-assessment-2qji.onrender.com/api/v1
+VITE_API_KEY=XXXXXXXX
+```
 
 ### Backend
 
+#### Desarrollo (H2)
+
+Las claves se definen en `application.properties`:
 ```properties
-# Desarrollo (H2)
+# API Keys para desarrollo
+app.api.keys=dev-api-key-12345,API_KEY : XXXXX,frontend-web-key-2024
+```
+
+#### Producción (Render.com)
+
+En **Render**, en Settings → Environment, agrega:
+```
+SPRING_PROFILES_ACTIVE=prod
+SPRING_DATASOURCE_URL=postgresql://[user]:[password]@[host]:[port]/[database]
+SPRING_DATASOURCE_USERNAME=[usuario]
+SPRING_DATASOURCE_PASSWORD=[contraseña]
+APP_API_KEYS=API_KEY : XXXXX
+```
+
+---
 spring.datasource.url=jdbc:h2:mem:testdb
 
 # Producción (PostgreSQL)
@@ -204,7 +307,11 @@ SPRING_JPA_HIBERNATE_DDL_AUTO=update
 ### Frontend
 
 ```env
+# Desarrollo
 VITE_API_BASE_URL=http://localhost:8080/api/v1
+
+# Producción (Render)
+VITE_API_BASE_URL=https://technical-assessment-2qji.onrender.com/api/v1
 ```
 
 ---

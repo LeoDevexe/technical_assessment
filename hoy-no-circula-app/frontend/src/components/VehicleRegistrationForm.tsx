@@ -1,5 +1,5 @@
 import { useCallback, useState } from 'react';
-import { useForm } from 'react-hook-form';
+import { Formik, Form } from 'formik';
 import { 
   Button, 
   TextField, 
@@ -22,12 +22,23 @@ import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import Swal from 'sweetalert2';
 import { vehicleService } from '../services/vehicleApi';
 import { VehicleRequestDTO } from '../types';
+import { vehicleValidationSchema } from '../utils/validationSchemas';
+
+const initialValues: VehicleRequestDTO = {
+  plate: '',
+  color: '',
+  model: '',
+  chassis: '',
+  brand: '',
+  year: '',
+  type: ''
+};
 
 export const VehicleRegistrationForm: React.FC = () => {
-  const { register, handleSubmit, formState: { errors }, reset } = useForm<VehicleRequestDTO>();
   const [loading, setLoading] = useState(false);
 
-  const onSubmit = useCallback(async (data: VehicleRequestDTO) => {
+
+  const onSubmit = useCallback(async (data: VehicleRequestDTO, { resetForm }: any) => {
     setLoading(true);
     try {
       const response = await vehicleService.registerVehicle(data);
@@ -51,7 +62,7 @@ export const VehicleRegistrationForm: React.FC = () => {
         confirmButtonColor: '#2563eb',
       });
       
-      reset();
+      resetForm();
     } catch (error: any) {
       Swal.fire({
         icon: 'error',
@@ -61,7 +72,8 @@ export const VehicleRegistrationForm: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  }, [reset]);
+  }, []);
+
 
   return (
     <Container maxWidth="md">
@@ -76,167 +88,191 @@ export const VehicleRegistrationForm: React.FC = () => {
           
           <Divider sx={{ mb: 3 }} />
           
-          <Box component="form" onSubmit={handleSubmit(onSubmit)}>
-            <Grid container spacing={3}>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  fullWidth
-                  label="Placa"
-                  placeholder="ABC-1234"
-                  {...register('plate', { 
-                    required: 'La placa es obligatoria',
-                    pattern: {
-                      value: /^[A-Z]{3}-?\d{3,4}$/i,
-                      message: 'Formato de placa inválido (ej: ABC-1234)'
-                    }
-                  })}
-                  error={!!errors.plate}
-                  helperText={errors.plate?.message}
-                  disabled={loading}
-                  InputProps={{
-                    startAdornment: (
-                      <InputAdornment position="start">
-                        <ConfirmationNumberIcon color="action" />
-                      </InputAdornment>
-                    ),
-                  }}
-                />
-              </Grid>
+          <Formik
+            initialValues={initialValues}
+            validationSchema={vehicleValidationSchema}
+            onSubmit={onSubmit}
+            validateOnChange
+            validateOnBlur
+          >
+            {({ values, errors, touched, isSubmitting, isValid, setFieldValue }) => (
+              <Form>
+                <Grid container spacing={3}>
+                  <Grid item xs={12} sm={6}>
+                    <TextField
+                      fullWidth
+                      name="plate"
+                      label="Placa"
+                      placeholder="ABC-1234"
+                      value={values.plate}
+                      error={touched.plate && !!errors.plate}
+                      helperText={touched.plate && errors.plate || 'Formato: ABC-1234'}
+                      disabled={loading || isSubmitting}
+                      InputProps={{
+                        startAdornment: (
+                          <InputAdornment position="start">
+                            <ConfirmationNumberIcon color="action" />
+                          </InputAdornment>
+                        ),
+                      }}
+                      inputProps={{
+                        maxLength: 8,
+                        style: { textTransform: 'uppercase' },
+                      }}
+                      onChange={(e) => setFieldValue('plate', e.target.value)}
+                    />
+                  </Grid>
 
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  fullWidth
-                  label="Color"
-                  placeholder="Rojo"
-                  {...register('color', { required: 'El color es obligatorio' })}
-                  error={!!errors.color}
-                  helperText={errors.color?.message}
-                  disabled={loading}
-                  InputProps={{
-                    startAdornment: (
-                      <InputAdornment position="start">
-                        <PaletteIcon color="action" />
-                      </InputAdornment>
-                    ),
-                  }}
-                />
-              </Grid>
+                  <Grid item xs={12} sm={6}>
+                    <TextField
+                      fullWidth
+                      name="color"
+                      label="Color"
+                      placeholder="Rojo"
+                      value={values.color}
+                      error={touched.color && !!errors.color}
+                      helperText={touched.color && errors.color || 'Solo letras (máx 50 caracteres)'}
+                      disabled={loading || isSubmitting}
+                      InputProps={{
+                        startAdornment: (
+                          <InputAdornment position="start">
+                            <PaletteIcon color="action" />
+                          </InputAdornment>
+                        ),
+                      }}
+                      inputProps={{
+                        maxLength: 50,
+                        pattern: '[a-zA-Z\\s]*',
+                      }}
+                      onChange={(e) => setFieldValue('color', e.target.value.replace(/[^a-zA-Z\\s]/g, ''))}
+                    />
+                  </Grid>
 
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  fullWidth
-                  label="Modelo"
-                  placeholder="Sedan"
-                  {...register('model', { required: 'El modelo es obligatorio' })}
-                  error={!!errors.model}
-                  helperText={errors.model?.message}
-                  disabled={loading}
-                  InputProps={{
-                    startAdornment: (
-                      <InputAdornment position="start">
-                        <BuildIcon color="action" />
-                      </InputAdornment>
-                    ),
-                  }}
-                />
-              </Grid>
+                  <Grid item xs={12} sm={6}>
+                    <TextField
+                      fullWidth
+                      name="model"
+                      label="Modelo"
+                      placeholder="Sedan"
+                      value={values.model}
+                      error={touched.model && !!errors.model}
+                      helperText={touched.model && errors.model || 'Máximo 100 caracteres'}
+                      disabled={loading || isSubmitting}
+                      InputProps={{
+                        startAdornment: (
+                          <InputAdornment position="start">
+                            <BuildIcon color="action" />
+                          </InputAdornment>
+                        ),
+                      }}
+                      inputProps={{
+                        maxLength: 100,
+                      }}
+                      onChange={(e) => setFieldValue('model', e.target.value)}
+                    />
+                  </Grid>
 
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  fullWidth
-                  label="Chasis"
-                  placeholder="CH1234567890"
-                  {...register('chassis', { required: 'El chasis es obligatorio' })}
-                  error={!!errors.chassis}
-                  helperText={errors.chassis?.message}
-                  disabled={loading}
-                  InputProps={{
-                    startAdornment: (
-                      <InputAdornment position="start">
-                        <ConfirmationNumberIcon color="action" />
-                      </InputAdornment>
-                    ),
-                  }}
-                />
-              </Grid>
+                  <Grid item xs={12} sm={6}>
+                    <TextField
+                      fullWidth
+                      name="chassis"
+                      label="Chasis (VIN)"
+                      placeholder="Ejm: 1HGBH41JXMN109186"
+                      value={values.chassis}
+                      error={touched.chassis && !!errors.chassis}
+                      helperText={touched.chassis && errors.chassis || '17 caracteres alfanuméricos'}
+                      disabled={loading || isSubmitting}
+                      InputProps={{
+                        startAdornment: (
+                          <InputAdornment position="start">
+                            <ConfirmationNumberIcon color="action" />
+                          </InputAdornment>
+                        ),
+                      }}
+                      inputProps={{
+                        maxLength: 17,
+                        style: { textTransform: 'uppercase' },
+                      }}
+                      onChange={(e) => setFieldValue('chassis', e.target.value.toUpperCase())}
+                    />
+                  </Grid>
 
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  fullWidth
-                  label="Marca"
-                  placeholder="Toyota"
-                  {...register('brand')}
-                  disabled={loading}
-                  InputProps={{
-                    startAdornment: (
-                      <InputAdornment position="start">
-                        <CategoryIcon color="action" />
-                      </InputAdornment>
-                    ),
-                  }}
-                />
-              </Grid>
+                  <Grid item xs={12} sm={6}>
+                    <TextField
+                      fullWidth
+                      name="brand"
+                      label="Marca"
+                      placeholder="Toyota"
+                      value={values.brand}
+                      error={touched.brand && !!errors.brand}
+                      helperText={touched.brand && errors.brand || 'Opcional - Máximo 50 caracteres'}
+                      disabled={loading || isSubmitting}
+                      InputProps={{
+                        startAdornment: (
+                          <InputAdornment position="start">
+                            <CategoryIcon color="action" />
+                          </InputAdornment>
+                        ),
+                      }}
+                      inputProps={{
+                        maxLength: 50,
+                      }}
+                      onChange={(e) => setFieldValue('brand', e.target.value)}
+                    />
+                  </Grid>
 
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  fullWidth
-                  label="Año"
-                  type="number"
-                  placeholder="2023"
-                  {...register('year', { 
-                    valueAsNumber: true,
-                    validate: (value) => !value || (value >= 1900 && value <= new Date().getFullYear() + 1) || 'Año inválido'
-                  })}
-                  error={!!errors.year}
-                  helperText={errors.year?.message}
-                  disabled={loading}
-                  InputProps={{
-                    startAdornment: (
-                      <InputAdornment position="start">
-                        <CalendarTodayIcon color="action" />
-                      </InputAdornment>
-                    ),
-                  }}
-                />
-              </Grid>
+                  <Grid item xs={12} sm={6}>
+                    <TextField
+                      fullWidth
+                      name="year"
+                      label="Año"
+                      placeholder="2023"
+                      type="tel"
+                      value={values.year}
+                      error={touched.year && !!errors.year}
+                      helperText={touched.year && errors.year || 'Opcional - 4 dígitos'}
+                      disabled={loading || isSubmitting}
+                      InputProps={{
+                        startAdornment: (
+                          <InputAdornment position="start">
+                            <CalendarTodayIcon color="action" />
+                          </InputAdornment>
+                        ),
+                      }}
+                      inputProps={{
+                        maxLength: 4,
+                        inputMode: 'numeric',
+                        pattern: '[0-9]*',
+                      }}
+                      onChange={(e) => {
+                        const value = e.target.value.replace(/[^0-9]/g, '');
+                        setFieldValue('year', value);
+                      }}
+                    />
+                  </Grid>
+                </Grid>
 
-              <Grid item xs={12}>
-                <TextField
-                  fullWidth
-                  label="Tipo de Vehículo"
-                  placeholder="Particular, Comercial, etc."
-                  {...register('type')}
-                  disabled={loading}
-                  InputProps={{
-                    startAdornment: (
-                      <InputAdornment position="start">
-                        <CategoryIcon color="action" />
-                      </InputAdornment>
-                    ),
-                  }}
-                />
-              </Grid>
-            </Grid>
-
-            <Box sx={{ mt: 4, display: 'flex', justifyContent: 'center' }}>
-              <Button
-                variant="contained"
-                color="primary"
-                type="submit"
-                size="large"
-                startIcon={loading ? null : <CheckCircleIcon />}
-                disabled={loading}
-                sx={{ 
-                  px: 5, 
-                  py: 1.5,
-                  fontSize: '1rem',
-                  fontWeight: 600
-                }}
-              >
-                {loading ? 'Registrando...' : 'Registrar Vehículo'}
-              </Button>
-            </Box>
-          </Box>
+                <Box sx={{ mt: 4, display: 'flex', justifyContent: 'center' }}>
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    type="submit"
+                    size="large"
+                    startIcon={loading || isSubmitting ? null : <CheckCircleIcon />}
+                    disabled={loading || isSubmitting || !isValid}
+                    sx={{ 
+                      px: 5, 
+                      py: 1.5,
+                      fontSize: '1rem',
+                      fontWeight: 600
+                    }}
+                  >
+                    {loading || isSubmitting ? 'Registrando...' : 'Registrar Vehículo'}
+                  </Button>
+                </Box>
+              </Form>
+            )}
+          </Formik>
         </CardContent>
       </Card>
     </Container>

@@ -40,7 +40,7 @@ public class Vehicle {
     @Column(length = 50)
     private String brand;
 
-    @Column
+    @Column(name = "vehicle_year")
     private Integer year;
 
     @Column(length = 50)

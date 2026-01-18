@@ -19,7 +19,6 @@ import java.util.List;
 @Slf4j
 @RestController
 @RequestMapping("/api/v1/vehicles")
-@CrossOrigin(origins = "*", maxAge = 3600)
 @Tag(name = "Vehículos", description = "Operaciones para gestionar vehículos")
 public class VehicleController {
 

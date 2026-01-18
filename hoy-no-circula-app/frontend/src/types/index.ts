@@ -17,7 +17,7 @@ export interface VehicleRequestDTO {
   model: string;
   chassis: string;
   brand?: string;
-  year?: number;
+  year?: string;
   type?: string;
 }
 

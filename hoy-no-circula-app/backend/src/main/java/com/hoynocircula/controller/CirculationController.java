@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.*;
 @Slf4j
 @RestController
 @RequestMapping("/api/v1/circulation")
-@CrossOrigin(origins = "*", maxAge = 3600)
 @Tag(name = "Circulación", description = "Operaciones para validar la norma Hoy No Circula")
 public class CirculationController {
 

@@ -1,5 +1,5 @@
-import { useCallback, useState } from 'react';
-import { useForm } from 'react-hook-form';
+import { useState } from 'react';
+import { Formik, Form } from 'formik';
 import { 
   Button, 
   TextField, 
@@ -28,43 +28,21 @@ import InfoIcon from '@mui/icons-material/Info';
 import Swal from 'sweetalert2';
 import { circulationService } from '../services/vehicleApi';
 import { CirculationCheckRequest, CirculationCheckResponse } from '../types';
+import { circulationValidationSchema } from '../utils/validationSchemas';
+
+const initialValues: CirculationCheckRequest = {
+  plate: '',
+  checkDateTime: ''
+};
 
 export const CirculationCheckForm: React.FC = () => {
-  const { register, handleSubmit, formState: { errors }, watch } = useForm<CirculationCheckRequest>();
   const [loading, setLoading] = useState(false);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [response, setResponse] = useState<CirculationCheckResponse | null>(null);
 
-  watch('checkDateTime');
-
-  const validateDateTime = (value: string) => {
-    if (!value) return 'La fecha y hora es obligatoria';
-    const selectedDate = new Date(value);
-    const now = new Date();
-    if (selectedDate < now) {
-      return 'La fecha y hora no puede ser anterior a la fecha y hora actual';
-    }
-    return true;
-  };
-
-  const onSubmit = useCallback(async (data: CirculationCheckRequest) => {
+  const onSubmit = async (data: CirculationCheckRequest, { setSubmitting }: any) => {
     setLoading(true);
     try {
-      // Validar que la fecha no sea anterior
-      const selectedDate = new Date(data.checkDateTime);
-      const now = new Date();
-      if (selectedDate < now) {
-        Swal.fire({
-          icon: 'error',
-          title: 'Error de Validación',
-          text: 'La fecha y hora no puede ser anterior a la fecha y hora actual',
-          confirmButtonColor: '#2563eb',
-        });
-        setLoading(false);
-        return;
-      }
-
-      // Convertir la fecha y hora al formato requerido
       const checkDateTime = new Date(data.checkDateTime).toISOString().split('T')[0] + ' ' + 
                             new Date(data.checkDateTime).toTimeString().split(' ')[0];
       
@@ -84,8 +62,9 @@ export const CirculationCheckForm: React.FC = () => {
       });
     } finally {
       setLoading(false);
+      setSubmitting(false);
     }
-  }, []);
+  };
 
   const handleCloseDialog = () => {
     setDialogOpen(false);
@@ -130,78 +109,87 @@ export const CirculationCheckForm: React.FC = () => {
             
             <Divider sx={{ mb: 3 }} />
             
-            <Box component="form" onSubmit={handleSubmit(onSubmit)}>
-              <Grid container spacing={3}>
-                <Grid item xs={12} md={6}>
-                  <TextField
-                    fullWidth
-                    label="Placa del Vehículo"
-                    placeholder="ABC-1234"
-                    {...register('plate', { 
-                      required: 'La placa es obligatoria',
-                      pattern: {
-                        value: /^[A-Z]{3}-?\d{3,4}$/i,
-                        message: 'Formato de placa inválido (ej: ABC-1234)'
-                      }
-                    })}
-                    error={!!errors.plate}
-                    helperText={errors.plate?.message}
-                    disabled={loading}
-                    InputProps={{
-                      startAdornment: (
-                        <InputAdornment position="start">
-                          <ConfirmationNumberIcon color="action" />
-                        </InputAdornment>
-                      ),
-                    }}
-                  />
-                </Grid>
+            <Formik
+              initialValues={initialValues}
+              validationSchema={circulationValidationSchema}
+              onSubmit={onSubmit}
+              validateOnChange
+              validateOnBlur
+            >
+              {({ values, errors, touched, isSubmitting, isValid, setFieldValue }) => (
+                <Form>
+                  <Grid container spacing={3}>
+                    <Grid item xs={12} md={6}>
+                      <TextField
+                        fullWidth
+                        name="plate"
+                        label="Placa del Vehículo"
+                        placeholder="ABC-1234"
+                        value={values.plate}
+                        error={touched.plate && !!errors.plate}
+                        helperText={touched.plate && errors.plate || 'Formato: ABC-1234'}
+                        disabled={loading || isSubmitting}
+                        InputProps={{
+                          startAdornment: (
+                            <InputAdornment position="start">
+                              <ConfirmationNumberIcon color="action" />
+                            </InputAdornment>
+                          ),
+                        }}
+                        inputProps={{
+                          maxLength: 8,
+                          style: { textTransform: 'uppercase' },
+                        }}
+                        onChange={(e) => setFieldValue('plate', e.target.value)}
+                      />
+                    </Grid>
 
-                <Grid item xs={12} md={6}>
-                  <TextField
-                    fullWidth
-                    label="Fecha y Hora"
-                    type="datetime-local"
-                    {...register('checkDateTime', { 
-                      required: 'La fecha y hora es obligatoria',
-                      validate: validateDateTime
-                    })}
-                    error={!!errors.checkDateTime}
-                    helperText={errors.checkDateTime?.message || 'Seleccione la fecha y hora a consultar'}
-                    disabled={loading}
-                    InputProps={{
-                      startAdornment: (
-                        <InputAdornment position="start">
-                          <AccessTimeIcon color="action" />
-                        </InputAdornment>
-                      ),
-                    }}
-                    inputProps={{
-                      min: new Date().toISOString().slice(0, 16),
-                    }}
-                  />
-                </Grid>
-              </Grid>
+                    <Grid item xs={12} md={6}>
+                      <TextField
+                        fullWidth
+                        name="checkDateTime"
+                        label="Fecha y Hora"
+                        type="datetime-local"
+                        value={values.checkDateTime}
+                        error={touched.checkDateTime && !!errors.checkDateTime}
+                        helperText={touched.checkDateTime && errors.checkDateTime || 'Seleccione la fecha y hora a consultar'}
+                        disabled={loading || isSubmitting}
+                        InputProps={{
+                          startAdornment: (
+                            <InputAdornment position="start">
+                              <AccessTimeIcon color="action" />
+                            </InputAdornment>
+                          ),
+                        }}
+                        inputProps={{
+                          min: new Date().toISOString().slice(0, 16),
+                        }}
+                        onChange={(e) => setFieldValue('checkDateTime', e.target.value)}
+                      />
+                    </Grid>
+                  </Grid>
 
-              <Box sx={{ mt: 4, display: 'flex', justifyContent: 'center' }}>
-                <Button
-                  variant="contained"
-                  color="secondary"
-                  type="submit"
-                  size="large"
-                  startIcon={loading ? null : <SearchIcon />}
-                  disabled={loading}
-                  sx={{ 
-                    px: 5, 
-                    py: 1.5,
-                    fontSize: '1rem',
-                    fontWeight: 600
-                  }}
-                >
-                  {loading ? 'Validando...' : 'Consultar Circulación'}
-                </Button>
-              </Box>
-            </Box>
+                  <Box sx={{ mt: 4, display: 'flex', justifyContent: 'center' }}>
+                    <Button
+                      variant="contained"
+                      color="secondary"
+                      type="submit"
+                      size="large"
+                      startIcon={loading || isSubmitting ? null : <SearchIcon />}
+                      disabled={loading || isSubmitting || !isValid}
+                      sx={{ 
+                        px: 5, 
+                        py: 1.5,
+                        fontSize: '1rem',
+                        fontWeight: 600
+                      }}
+                    >
+                      {loading || isSubmitting ? 'Validando...' : 'Consultar Circulación'}
+                    </Button>
+                  </Box>
+                </Form>
+              )}
+            </Formik>
           </CardContent>
         </Card>
       </Container>
