@@ -26,7 +26,6 @@ frontend/*.swp
 frontend/*.swo
 
 # Environment variables
-.env
 .env.production
 .env.local
 .env.*.local

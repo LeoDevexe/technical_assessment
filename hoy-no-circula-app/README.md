@@ -9,6 +9,7 @@ Si ya tienes Java 17+, Maven y Node.js 18+:
 ```bash
 # Terminal 1: Backend
 cd hoy-no-circula-app/backend
+mvn clean install
 mvn spring-boot:run
 
 # Terminal 2: Frontend
@@ -179,6 +180,23 @@ npm run dev
 
 🌐 **Frontend disponible en:**
 - `http://localhost:3000` (o `http://localhost:3001` si 3000 está en uso)
+
+---
+
+### 📝 Variables de Entorno - Frontend (Desarrollo)
+
+El archivo `frontend/.env` ya contiene las variables necesarias para desarrollo local:
+
+```env
+VITE_API_BASE_URL=http://localhost:8080/api/v1
+VITE_API_KEY=dev-api-key-12345
+```
+
+**No necesitas cambiar nada** si ejecutas el backend en `http://localhost:8080`. El frontend se conectará automáticamente.
+
+Si el backend está en otra máquina o puerto, actualiza:
+- `VITE_API_BASE_URL`: URL base de la API del backend
+- `VITE_API_KEY`: Clave API (debe coincidir con las claves configuradas en el backend)
 
 ---
 

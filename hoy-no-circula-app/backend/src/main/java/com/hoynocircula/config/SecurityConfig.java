@@ -26,17 +26,21 @@ public class SecurityConfig {
         http
             .csrf(csrf -> csrf.disable())
             .cors(cors -> {}) // CORS ya está configurado en CorsConfig
+            .headers(headers -> headers.frameOptions(frameOptions -> frameOptions.disable()))
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
-                // Permitir acceso público a Swagger/OpenAPI
                 .requestMatchers(
                     "/swagger-ui.html",
                     "/swagger-ui/**",
                     "/v3/api-docs/**",
-                    "/v3/api-docs.yaml"
+                    "/v3/api-docs.yaml",
+                    "/api-docs/**"
                 ).permitAll()
+                // Health check sin autenticación
                 .requestMatchers("/api/v1/info/health").permitAll()
-                // Requerir API Key para todas las rutas /api/**
+                // H2 Console (solo desarrollo)
+                .requestMatchers("/h2-console", "/h2-console/**").permitAll()
+                // LUEGO las rutas generales - Requerir API Key para todas las rutas /api/**
                 .requestMatchers("/api/**").authenticated()
                 // El resto requiere autenticación
                 .anyRequest().authenticated()

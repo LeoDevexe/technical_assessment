@@ -69,5 +69,21 @@ export const circulationValidationSchema = Yup.object().shape({
       if (!value) return false;
       const selectedDate = new Date(value);
       return !isNaN(selectedDate.getTime());
+    })
+    .test('not-future', 'No puedes consultar fechas futuras, solo pasadas o la actual', (value) => {
+      if (!value) return false;
+      const selectedDate = new Date(value);
+      const now = new Date();
+      return selectedDate <= now;
+    })
+    .test('reasonable-date', 'La fecha debe estar dentro de los últimos 30 días', (value) => {
+      if (!value) return false;
+      const selectedDate = new Date(value);
+      const now = new Date();
+      
+      const minDate = new Date(now);
+      minDate.setDate(minDate.getDate() - 30);
+      
+      return selectedDate >= minDate;
     }),
 });

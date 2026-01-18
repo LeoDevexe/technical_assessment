@@ -78,7 +78,8 @@ export const CirculationCheckForm: React.FC = () => {
       day: 'numeric',
       hour: '2-digit',
       minute: '2-digit',
-      hour12: true
+      hour12: true,
+      timeZone: 'America/Guayaquil'
     });
   };
 
@@ -152,7 +153,7 @@ export const CirculationCheckForm: React.FC = () => {
                         type="datetime-local"
                         value={values.checkDateTime}
                         error={touched.checkDateTime && !!errors.checkDateTime}
-                        helperText={touched.checkDateTime && errors.checkDateTime || 'Seleccione la fecha y hora a consultar'}
+                        helperText={touched.checkDateTime && errors.checkDateTime || 'Consulta desde los últimos 30 días hasta hoy (América/Guayaquil)'}
                         disabled={loading || isSubmitting}
                         InputProps={{
                           startAdornment: (
@@ -160,9 +161,6 @@ export const CirculationCheckForm: React.FC = () => {
                               <AccessTimeIcon color="action" />
                             </InputAdornment>
                           ),
-                        }}
-                        inputProps={{
-                          min: new Date().toISOString().slice(0, 16),
                         }}
                         onChange={(e) => setFieldValue('checkDateTime', e.target.value)}
                       />
