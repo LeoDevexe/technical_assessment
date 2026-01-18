@@ -99,18 +99,25 @@ URLs:
 
 3. **Desplegar Backend**:
    - "+ New +" → "Web Service"
-   - Conectar repositorio GitHub
+   - Conectar repositorio GitHub: `LeoDevexe/technical_assessment`
+   - ⚠️ **Root Directory**: `hoy-no-circula-app` (IMPORTANTE)
    - Runtime: Docker
    - Dockerfile Path: `./Dockerfile.backend`
    - Variables de entorno:
      ```
      SPRING_PROFILES_ACTIVE=prod
-     SPRING_DATASOURCE_URL=[External Database URL]
+     SPRING_DATASOURCE_URL=jdbc:postgresql://[host]:5432/hoy_no_circula
+     SPRING_DATASOURCE_USERNAME=[usuario]
+     SPRING_DATASOURCE_PASSWORD=[contraseña]
      SPRING_JPA_HIBERNATE_DDL_AUTO=update
      ```
+   - ⚠️ **IMPORTANTE**: Agrega `jdbc:` al inicio de SPRING_DATASOURCE_URL
+   - Ejemplo: Si Render te da `postgresql://host:5432/db`, usa `jdbc:postgresql://host:5432/db`
 
 4. **Desplegar Frontend**:
    - "+ New +" → "Web Service"
+   - Conectar el mismo repositorio
+   - ⚠️ **Root Directory**: `hoy-no-circula-app` (IMPORTANTE)
    - Runtime: Docker
    - Dockerfile Path: `./Dockerfile.frontend`
    - Variable de entorno:
