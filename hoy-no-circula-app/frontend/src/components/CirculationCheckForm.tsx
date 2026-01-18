@@ -35,7 +35,7 @@ export const CirculationCheckForm: React.FC = () => {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [response, setResponse] = useState<CirculationCheckResponse | null>(null);
 
-  const checkDateTime = watch('checkDateTime');
+  watch('checkDateTime');
 
   const validateDateTime = (value: string) => {
     if (!value) return 'La fecha y hora es obligatoria';
