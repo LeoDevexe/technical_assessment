@@ -2,7 +2,24 @@
 
 Aplicación web full-stack para gestionar el registro de vehículos y validar la norma "Hoy No Circula". Desarrollada con **Spring Boot 3** (backend) y **React + TypeScript** (frontend).
 
-## 📋 Características
+## ⚡ Quick Start (5 minutos)
+
+Si ya tienes Java 17+, Maven y Node.js 18+:
+
+```bash
+# Terminal 1: Backend
+cd hoy-no-circula-app/backend
+mvn spring-boot:run
+
+# Terminal 2: Frontend
+cd hoy-no-circula-app/frontend
+npm install
+npm run dev
+```
+
+**Luego abre en el navegador:** http://localhost:3000
+
+---
 
 - ✅ **Registrar vehículos** con información completa (placa, color, modelo, chasis, marca, año)
 - 🔍 **Consultar si un vehículo puede circular** en una fecha y hora específica
@@ -27,6 +44,38 @@ Aplicación web full-stack para gestionar el registro de vehículos y validar la
 
 ---
 
+## 📸 Demostración (Pantallas)
+
+### Frontend
+```
+┌─────────────────────────────────┐
+│  Hoy No Circula 🚗              │
+├─────────────────────────────────┤
+│                                 │
+│  📝 Registrar Nuevo Vehículo    │
+│  ┌───────────────────────────┐  │
+│  │ Placa: [ABC-1234]         │  │
+│  │ Color: [Rojo]             │  │
+│  │ Modelo: [Sedan]           │  │
+│  │ Chasis: [1HGBH41JXMN...] │  │
+│  │ Marca: [Toyota]           │  │
+│  │ Año: [2023]               │  │
+│  │                           │  │
+│  │ [Registrar Vehículo]      │  │
+│  └───────────────────────────┘  │
+│                                 │
+│  🔍 Consultar Circulación       │
+│  ┌───────────────────────────┐  │
+│  │ Placa: [ABC-1234]         │  │
+│  │ Fecha: [18/01/2026 09:00] │  │
+│  │                           │  │
+│  │ [Consultar Circulación]   │  │
+│  └───────────────────────────┘  │
+└─────────────────────────────────┘
+```
+
+---
+
 ## 🛠️ Tecnologías
 
 **Backend:**
@@ -47,34 +96,132 @@ Aplicación web full-stack para gestionar el registro de vehículos y validar la
 
 ### Requisitos Previos
 
-- **Java 17+**
-- **Maven 3.8+**
-- **Node.js 18+**
-- **Docker** (opcional, para Docker Compose)
+Antes de comenzar, asegúrate de tener instalado:
 
-### Desarrollo Local
+- **Java 17+** - [Descargar](https://www.oracle.com/java/technologies/downloads/#java17)
+- **Maven 3.8+** - Incluido con Java, verificar con: `mvn -v`
+- **Node.js 18+** - [Descargar](https://nodejs.org/)
+- **Git** - Para clonar el repositorio
 
-#### Backend
+### Verificar Instalación
+
+```bash
+# Verificar Java
+java -version
+
+# Verificar Maven
+mvn -v
+
+# Verificar Node.js
+node --version
+npm --version
+```
+
+---
+
+## 🎯 Ejecutar en Desarrollo Local
+
+### 1️⃣ Clonar el Repositorio
+
+```bash
+git clone https://github.com/LeoDevexe/technical_assessment.git
+cd technical_assessment/hoy-no-circula-app
+```
+
+### 2️⃣ Ejecutar el Backend
+
+**Terminal 1 (Backend):**
 
 ```bash
 cd backend
+
+# Instalar dependencias y compilar
+mvn clean install
+
+# Ejecutar el servidor
 mvn spring-boot:run
 ```
 
-El backend estará disponible en: **http://localhost:8080**
-- API Docs (Swagger): **http://localhost:8080/swagger-ui.html**
+✅ **Esperado:**
+```
+Started HoyNocirculaApplication in X seconds
+```
 
-#### Frontend
+🌐 **Backend disponible en:**
+- URL Principal: `http://localhost:8080`
+- Documentación API (Swagger): `http://localhost:8080/swagger-ui.html`
+- Health Check: `http://localhost:8080/api/v1/info/health`
+
+**Credenciales para desarrollo:**
+- API Key: `dev-api-key-12345`
+
+---
+
+### 3️⃣ Ejecutar el Frontend
+
+**Terminal 2 (Frontend):**
 
 ```bash
 cd frontend
+
+# Instalar dependencias
 npm install
+
+# Ejecutar en modo desarrollo
 npm run dev
 ```
 
-El frontend estará disponible en: **http://localhost:5173**
+✅ **Esperado:**
+```
+  ➜  Local:   http://localhost:3000/
+  ➜  Network: use --host to expose
+```
 
-#### Con Docker Compose
+🌐 **Frontend disponible en:**
+- `http://localhost:3000` (o `http://localhost:3001` si 3000 está en uso)
+
+---
+
+## 🧪 Probar la Aplicación
+
+### En el Navegador
+
+1. Abre **http://localhost:3000** en tu navegador
+2. Verás dos formularios:
+   - **Registrar Nuevo Vehículo** 🚗
+   - **Consultar Circulación** 🔍
+
+### Datos de Prueba
+
+**Registrar un vehículo:**
+```
+Placa:      ABC-1234 (o ABC1234)
+Color:      Rojo
+Modelo:     Sedan
+Chasis:     1HGBH41JXMN109186 (17 caracteres)
+Marca:      Toyota
+Año:        2023 (opcional)
+```
+
+**Consultar circulación:**
+```
+Placa:           ABC-1234
+Fecha y Hora:    18/01/2026 09:00
+```
+
+---
+
+### Desde Swagger UI (Más técnico)
+
+1. Abre **http://localhost:8080/swagger-ui.html**
+2. Expande **"vehicles-controller"**
+3. Prueba los endpoints
+
+---
+
+## 🐳 Opción: Ejecutar con Docker Compose
+
+Si tienes Docker instalado:
 
 ```bash
 docker-compose up --build
@@ -86,7 +233,7 @@ URLs:
 
 ---
 
-## 📦 Despliegue en Producción
+## 📦 Despliegue en Producción (Ya realizado)
 
 ### URLs en Render.com
 
@@ -192,29 +339,26 @@ Tests incluidos:
 
 ## 🔐 Seguridad - API Key
 
-La aplicación utiliza **autenticación con API Key** para proteger todos los endpoints de la API.
+**⚠️ IMPORTANTE:** Todos los endpoints de la API requieren una **API Key** en el header.
 
-### Configuración
+### Para Desarrollo (Ya configurado ✅)
 
-Cada solicitud debe incluir el header:
-```
-X-API-Key: [clave-api]
-```
-
-### API Keys Válidas
-
-**Desarrollo:**
+El frontend ya envía automáticamente:
 ```
 X-API-Key: dev-api-key-12345
 ```
 
-**Producción:**
-```
-X-API-Key: prod-api-key-secure-key
+**No necesitas hacer nada más**, todo funciona automáticamente en desarrollo.
+
+### Si Quieres Probar Manualmente
+
+**Con cURL:**
+```bash
+curl -X GET http://localhost:8080/api/v1/info/health \
+  -H "X-API-Key: dev-api-key-12345"
 ```
 
-### Ejemplo de Solicitud
-
+**Registro de vehículo:**
 ```bash
 curl -X POST http://localhost:8080/api/v1/vehicles/register \
   -H "Content-Type: application/json" \
@@ -229,94 +373,202 @@ curl -X POST http://localhost:8080/api/v1/vehicles/register \
   }'
 ```
 
-### Con JavaScript/Axios (Frontend)
+### API Keys por Entorno
 
-```typescript
-import axios from 'axios';
+| Entorno | API Key |
+|---------|---------|
+| Desarrollo | `dev-api-key-12345` |
+| Producción | `XXXXX` |
+| Mobile | `mobile-app-key-2024` |
 
-const apiClient = axios.create({
-  baseURL: 'http://localhost:8080/api/v1',
-  headers: {
-    'Content-Type': 'application/json',
-    'X-API-Key': 'dev-api-key-12345'
-  },
-});
+### Error: 401 Unauthorized
+
+Si ves este error:
+```json
+{"error": "API Key inválida o expirada"}
 ```
 
-### Gestión de API Keys
+**Solución:**
+1. Verifica que el header `X-API-Key` está presente
+2. Verifica que la clave sea correcta
+3. Reinicia el backend
 
-⚠️ **En Producción:**
-- Las claves deben almacenarse en **variables de entorno**
-- Usar diferentes claves para cada entorno (dev, staging, prod)
-- Rotar claves regularmente
-- Usar HTTPS obligatoriamente
-
-**Ubicación de las claves (backend):**
-- [`src/main/java/com/hoynocircula/security/ApiKeyProvider.java`](backend/src/main/java/com/hoynocircula/security/ApiKeyProvider.java)
+---
 
 ---
 
 ## 📖 Variables de Entorno
 
-### Frontend
+### Para Desarrollo Local (Ya está todo configurado ✅)
+
+Las variables de desarrollo ya están en los archivos:
+- Frontend: `frontend/.env`
+- Backend: `backend/src/main/resources/application.properties`
+
+**No necesitas cambiar nada para desarrollo.**
+
+---
+
+### Para Producción (Render.com)
+
+Cuando despliegues a Render, necesitarás agregar estas variables:
+
+**Backend Web Service:**
+
+En Render Dashboard → Tu servicio Backend → Settings → Environment
 
 ```bash
-# .env (Desarrollo)
+SPRING_PROFILES_ACTIVE=prod
+SPRING_DATASOURCE_URL=jdbc:postgresql://[host]:[puerto]/[base-datos]
+SPRING_DATASOURCE_USERNAME=[usuario]
+SPRING_DATASOURCE_PASSWORD=[contraseña]
+SPRING_JPA_HIBERNATE_DDL_AUTO=update
+APP_API_KEYS=XXXXX,mobile-app-key-2024
+```
+
+**Frontend Static Site:**
+
+En Render Dashboard → Tu servicio Frontend → Settings → Environment
+
+```bash
+VITE_API_KEY=XXXXX
+```
+
+---
+
+### Detalles por Archivo
+
+**Frontend `frontend/.env` (Desarrollo):**
+```properties
 VITE_API_BASE_URL=http://localhost:8080/api/v1
 VITE_API_KEY=dev-api-key-12345
 ```
 
-```bash
-# .env.production (Producción)
-VITE_API_BASE_URL=https://technical-assessment-2qji.onrender.com/api/v1
-VITE_API_KEY=XXXXXXXX
-```
-
-### Backend
-
-#### Desarrollo (H2)
-
-Las claves se definen en `application.properties`:
+**Frontend `frontend/.env.production` (Producción):**
 ```properties
-# API Keys para desarrollo
-app.api.keys=dev-api-key-12345,API_KEY : XXXXX,frontend-web-key-2024
-```
-
-#### Producción (Render.com)
-
-En **Render**, en Settings → Environment, agrega:
-```
-SPRING_PROFILES_ACTIVE=prod
-SPRING_DATASOURCE_URL=postgresql://[user]:[password]@[host]:[port]/[database]
-SPRING_DATASOURCE_USERNAME=[usuario]
-SPRING_DATASOURCE_PASSWORD=[contraseña]
-APP_API_KEYS=API_KEY : XXXXX
-```
-
----
-spring.datasource.url=jdbc:h2:mem:testdb
-
-# Producción (PostgreSQL)
-SPRING_DATASOURCE_URL=jdbc:postgresql://host:5432/hoy_no_circula
-SPRING_DATASOURCE_USERNAME=postgres
-SPRING_DATASOURCE_PASSWORD=password
-SPRING_PROFILES_ACTIVE=prod
-SPRING_JPA_HIBERNATE_DDL_AUTO=update
-```
-
-### Frontend
-
-```env
-# Desarrollo
-VITE_API_BASE_URL=http://localhost:8080/api/v1
-
-# Producción (Render)
 VITE_API_BASE_URL=https://technical-assessment-2qji.onrender.com/api/v1
+VITE_API_KEY=XXXXX
+```
+
+**Backend `backend/src/main/resources/application.properties` (Desarrollo):**
+```properties
+spring.application.name=hoy-no-circula-backend
+spring.profiles.active=dev
+spring.datasource.url=jdbc:h2:mem:testdb
+app.api.keys=dev-api-key-12345,XXXXX,mobile-app-key-2024
+```
+
+**Backend `backend/src/main/resources/application-prod.properties` (Producción):**
+```properties
+spring.jpa.hibernate.ddl-auto=${SPRING_JPA_HIBERNATE_DDL_AUTO:update}
+app.api.keys=${APP_API_KEYS:XXXXX,mobile-app-key-2024}
 ```
 
 ---
 
-## 🏗️ Arquitectura
+## � Troubleshooting - Problemas Comunes
+
+### ❌ "Puerto 8080 ya está en uso"
+
+```
+Address already in use: bind
+```
+
+**Solución:**
+```bash
+# Matar el proceso Java anterior
+# En Windows PowerShell:
+Get-Process java | Stop-Process -Force
+
+# O cambiar el puerto en backend/src/main/resources/application.properties:
+server.port=8081
+```
+
+---
+
+### ❌ "Cannot GET /" en Frontend
+
+El frontend no carga, muestra error en la consola.
+
+**Solución:**
+1. Verifica que el backend está ejecutándose: `http://localhost:8080/api/v1/info/health`
+2. Verifica que el `.env` tiene la URL correcta
+3. Recarga la página: `Ctrl + Shift + R` (hard refresh)
+
+---
+
+### ❌ "API Key inválida" (401 Unauthorized)
+
+```json
+{"error": "API Key inválida o expirada"}
+```
+
+**Soluciones:**
+1. Verifica que el `.env` tiene `VITE_API_KEY=dev-api-key-12345`
+2. Reinicia el frontend: `npm run dev`
+3. Recarga la página en el navegador
+
+---
+
+### ❌ "No se puede conectar a localhost:8080"
+
+**Solución:**
+1. Verifica que el backend está ejecutándose
+2. En terminal del backend deberías ver:
+   ```
+   Started HoyNocirculaApplication in X seconds
+   ```
+3. Si no, ejecuta: `cd backend && mvn spring-boot:run`
+
+---
+
+### ❌ Error en Maven: "Could not find or load main class"
+
+**Solución:**
+```bash
+cd backend
+mvn clean compile
+mvn spring-boot:run
+```
+
+---
+
+### ❌ "npm: command not found"
+
+Node.js no está instalado.
+
+**Solución:**
+1. Descarga Node.js desde: https://nodejs.org/
+2. Instala la versión LTS (18+)
+3. Reinicia la terminal y verifica: `node --version`
+
+---
+
+### ❌ En los formularios no se aceptan valores
+
+Los inputs no permiten escribir o aparecen en rojo.
+
+**Solución:**
+1. Abre la consola del navegador: `F12`
+2. Verifica que no hay errores JavaScript
+3. Recarga la página completamente: `Ctrl + Shift + R`
+4. Si persiste, limpia el caché: `npm run dev` (cierra y abre otra vez)
+
+---
+
+## ✅ Verificación Rápida
+
+Si completaste todo correctamente, deberías ver:
+
+- [ ] Backend corriendo en http://localhost:8080 ✅
+- [ ] Frontend corriendo en http://localhost:3000 ✅
+- [ ] Swagger disponible en http://localhost:8080/swagger-ui.html ✅
+- [ ] Puedes registrar un vehículo sin errores ✅
+- [ ] Puedes consultar la circulación ✅
+- [ ] Los formularios muestran validación en rojo si hay error ✅
+- [ ] Sin errores en la consola del navegador (F12) ✅
+
+---
 
 ```
 backend/
